@@ -29,7 +29,7 @@ public:
 	void output(std::ostream& out)const;
 
 	void push_front(const T& theElement);
-	void push_back(const T& theElement);
+	void reverse();
 	iterator begin() { return iterator(firstNode); }
 	iterator end() { return iterator(nullptr); }
 protected:
@@ -37,6 +37,26 @@ protected:
 	ChainNode<T>* firstNode;
 	int listSize;
 };
+
+template<class T>
+void Chain<T>::reverse()
+{
+	//逆序->其实就是把节点->next的指向一点点反过来
+	ChainNode<T>* preNode = firstNode;
+	ChainNode<T>* curNode = firstNode->next;
+	ChainNode<T>* nextNode = nullptr;
+
+	while (curNode != nullptr)
+	{
+		nextNode = curNode->next;
+		curNode->next = preNode;
+		preNode = curNode;
+		curNode = nextNode;
+	}
+	//改一下头节点
+	firstNode->next = nullptr;
+	firstNode = preNode;
+}
 
 template<class T>
 class Chain<T>::iterator
@@ -112,9 +132,20 @@ Chain<T>::Chain(const Chain<T>& theList)
 		firstNode = nullptr;
 		return;
 	}
-
+	//首元素申请空间
 	ChainNode<T>* sourceNode = theList.firstNode;
 	firstNode = new ChainNode<T>(sourceNode->element);
+	
+	sourceNode = sourceNode->next;
+	ChainNode<T>* targetNode = firstNode;
+
+	while (sourceNode != nullptr)
+	{
+		targetNode->next = new ChainNode<T>(sourceNode->element);
+		targetNode = targetNode->next;
+		sourceNode = sourceNode->next;
+	}
+	targetNode->next = nullptr;
 }
 
 template<class T>
@@ -225,4 +256,6 @@ void Chain<T>::push_front(const T& theElement)
 	auto* newNode = new ChainNode<T>(theElement, firstNode);
 	firstNode = newNode;
 }
+
+
 
